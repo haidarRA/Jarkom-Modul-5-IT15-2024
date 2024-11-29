@@ -244,3 +244,18 @@ route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.71.1.27
 
 ### Test Routing
 ![image](https://github.com/user-attachments/assets/feb43e23-ca73-4a76-aa6f-a8ea5892ce46)
+
+# Misi 2: Menemukan Jejak Sang Peretas
+
+## No. 1
+Soal:
+> Agar jaringan di New Eridu bisa terhubung ke luar (internet), kalian perlu mengkonfigurasi routing menggunakan iptables. Namun, kalian tidak diperbolehkan menggunakan MASQUERADE.
+
+Jalankan script berikut pada router NewEridu agar dapat mengakses internet.
+```
+ETH0_IP=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP
+```
+
+### Testing
+![image](https://github.com/user-attachments/assets/8fc6f53e-13b2-487f-8ecd-eba122fcd596)
