@@ -408,3 +408,26 @@ iptables -A INPUT -j DROP
 
 2. Test netcat dari perangkat/node lain ke HDD
 ![image](https://github.com/user-attachments/assets/7f980eb5-7c23-43ed-aea6-0eec7dbba374)
+
+## No. 4
+Soal:
+> Fairy mendeteksi aktivitas mencurigakan di server Hollow. Namun, berdasarkan peraturan polisi New Eridu, Hollow hanya boleh diakses pada hari Senin hingga Jumat dan hanya oleh faksi SoC (Burnice & Caesar) dan PubSec (Jane & Policeboo). Karena hari ini hari Sabtu, mereka harus menunggu hingga hari Senin. Gunakan curl untuk memastikan akses ini.
+
+Jalankan script berikut pada web server HollowZero.
+```
+iptables -A INPUT -s 10.71.1.64/26 -m time --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT
+iptables -A INPUT -s 10.71.0.0/24 -m time --weekdays Mon,Tue,Wed,Thu,Fri -j ACCEPT
+iptables -A INPUT -j REJECT
+```
+
+### Testing
+1. curl dari client Burnice (testing dengan hari Jumat dan Sabtu)
+![image](https://github.com/user-attachments/assets/e70e35a3-55a9-4e19-87fc-636bef57a0de)
+
+2. Curl dari client selain Burnice, Caesar, Jane, dan Policeboo
+![image](https://github.com/user-attachments/assets/feaaae48-7357-4a8c-aca6-811bdd2c9de7)
+
+## No. 5
+Soal:
+> Sembari menunggu, Fairy menyarankan Phaethon untuk berlatih di server HIA dan meminta bantuan dari faksi Victoria (Ellen & Lycaon) dan PubSec. Akses HIA hanya diperbolehkan untuk a. Ellen dan Lycaon pada jam 08.00-21.00. b. Jane dan Policeboo pada jam 03.00-23.00 (hak kepolisian). Gunakan Curl untuk memastikan akses ini.
+
