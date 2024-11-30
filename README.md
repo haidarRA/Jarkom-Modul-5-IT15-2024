@@ -391,3 +391,20 @@ iptables -A INPUT -j DROP
 
 2. Test ping dari Fairy ke perangkat/node lain
 ![image](https://github.com/user-attachments/assets/613ec9a0-f036-4d9c-8fca-62feb89231d4)
+
+## No. 3
+Soal:
+> Selain itu, agar kejadian sebelumnya tidak terulang, hanya Fairy yang dapat mengakses HDD. Gunakan nc (netcat) untuk memastikan akses ini. [hapus aturan iptables setelah pengujian selesai agar internet tetap dapat diakses.]
+
+Jalankan script berikut pada DHCP server HDD agar hanya Fairy yang dapat mengakses HDD.
+```
+iptables -A INPUT -s 10.71.1.10 -j ACCEPT
+iptables -A INPUT -j DROP
+```
+
+### Testing
+1. Test netcat dari Fairy ke HDD
+![image](https://github.com/user-attachments/assets/022fda8c-1079-49e7-ac63-bf59ef49f38a)
+
+2. Test netcat dari perangkat/node lain ke HDD
+![image](https://github.com/user-attachments/assets/7f980eb5-7c23-43ed-aea6-0eec7dbba374)
