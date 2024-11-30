@@ -245,6 +245,119 @@ route add -net 0.0.0.0 netmask 0.0.0.0 gw 10.71.1.27
 ### Test Routing
 ![image](https://github.com/user-attachments/assets/feb43e23-ca73-4a76-aa6f-a8ea5892ce46)
 
+## No. 4
+Soal:
+> Konfigurasi → dikerjakan setelah misi 2 nomor 1
+> * Fairy sebagai DHCP Server agar perangkat yang berada dalam Burnice, Caesar, Ellen, Jane, Lycaon, dan Policeboo dapat menerima alamat IP secara otomatis.
+> * OuterRing, BalletTwins, Sixstreet dan LuminaSquare Sebagai DHCP Relay
+> * HDD sebagai DNS server
+> * HIA dan HollowZero Sebagai Web server (gunakan apache)
+> 
+> index.html
+> ```
+> Welcome to {hostname}
+> ```
+
+Sebelum melakukan konfigurasi pada DHCP relay, DHCP server, DNS server, dan DHCP server, jalankan script berikut untuk menambahkan ```nameserver 192.168.122.1``` agar dapat terhubung dengan internet.
+```
+echo 'nameserver 192.168.122.1' > /etc/resolv.conf
+```
+
+### Script Konfigurasi
+1. DHCP Relay (OuterRing, SixStreet, LuminaSquare, BalletTwins):
+```
+apt-get update
+apt-get install isc-dhcp-relay -y
+service isc-dhcp-relay start
+
+echo 'SERVERS="10.71.1.10"
+INTERFACES="eth0 eth1 eth2 eth3"
+OPTIONS=' > /etc/default/isc-dhcp-relay
+
+service isc-dhcp-relay restart
+```
+
+2. DHCP Server (Fairy):
+```
+apt-get update
+apt-get install isc-dhcp-server
+
+echo 'INTERFACESv4="eth0"' > /etc/default/isc-dhcp-server
+
+echo '
+#Burnice & Caesar
+subnet 10.71.1.64 netmask 255.255.255.192 {
+    range 10.71.1.65 10.71.1.125;
+    option routers 10.71.1.126;
+    option broadcast-address 10.71.1.63;
+    option domain-name-servers 10.71.1.9;
+}
+
+#Jane & Policeboo
+subnet 10.71.0.0 netmask 255.255.255.0 {
+    range 10.71.0.1 10.71.0.253;
+    option routers 10.71.0.254;
+    option broadcast-address 10.71.0.255;
+    option domain-name-servers 10.71.1.9;
+}
+
+#Ellen & Lycaon
+subnet 10.71.1.128 netmask 255.255.255.128 {
+    range 10.71.1.129 10.71.1.253;
+    option routers 10.71.1.254;
+    option broadcast-address 10.71.1.255;
+    option domain-name-servers 10.71.1.9;
+}
+
+subnet 10.71.1.8 netmask 255.255.255.248 {
+}'> /etc/dhcp/dhcpd.conf
+
+service isc-dhcp-server restart
+```
+
+3. DNS Server (HDD):
+```
+apt-get update
+apt-get install bind9 -y
+
+echo 'options {
+        directory "/var/cache/bind";
+
+        forwarders {
+            192.168.122.1;
+        };
+
+        allow-query{any;};
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};' > /etc/bind/named.conf.options
+
+service bind9 restart
+```
+
+4. Web Server (HIA, HollowZero):
+```
+apt-get update
+apt-get install apache2 -y
+
+HOST=$(hostname)
+echo "Welcome to $HOST" > /var/www/html/index.html
+
+service apache2 restart
+```
+
+### Testing
+1. DHCP client yang sudah mendapatkan IP address dari DHCP server
+![image](https://github.com/user-attachments/assets/f6c17f72-bc75-4245-8e8f-3346bdbe954d)
+
+2. DHCP client yang dapat terhubung dengan internet melalui DNS server
+![image](https://github.com/user-attachments/assets/2f527099-45d7-4ea4-82a5-650d2d220674)
+
+3. Akses ke web server HIA dan HollowZero (note: Install Lynx terlebih dahulu sebelum mengakses web server)
+![image](https://github.com/user-attachments/assets/94de83b7-276f-4380-b9ab-e249bfe0fab1)
+![image](https://github.com/user-attachments/assets/84c2044c-ea0e-4f5b-a8b6-c56ab888de2e)
+
 # Misi 2: Menemukan Jejak Sang Peretas
 
 ## No. 1
