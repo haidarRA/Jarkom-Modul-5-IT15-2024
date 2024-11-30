@@ -372,3 +372,22 @@ iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source $ETH0_IP
 
 ### Testing
 ![image](https://github.com/user-attachments/assets/8fc6f53e-13b2-487f-8ecd-eba122fcd596)
+
+## No. 2
+Soal:
+> Karena Fairy adalah AI yang sangat berharga, kalian perlu memastikan bahwa tidak ada perangkat lain yang bisa melakukan ping ke Fairy. Tapi Fairy tetap dapat mengakses seluruh perangkat.
+
+Jalankan script berikut pada DNS server Fairy agar perangkat lain tidak dapat melakukan ping ke Fairy dan masih bisa akses node lainnya dari Fairy.
+```
+iptables -A OUTPUT -j ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -j DROP
+```
+
+### Testing
+1. Test ping dari perangkat/node lain ke Fairy
+![image](https://github.com/user-attachments/assets/54e4e914-0817-4d2d-a1bd-9cebd0344e02)
+![image](https://github.com/user-attachments/assets/ad2332f2-0e66-48a4-81f5-2e7cd5406a91)
+
+2. Test ping dari Fairy ke perangkat/node lain
+![image](https://github.com/user-attachments/assets/613ec9a0-f036-4d9c-8fca-62feb89231d4)
