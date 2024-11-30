@@ -421,7 +421,7 @@ iptables -A INPUT -j REJECT
 ```
 
 ### Testing
-1. curl dari client Burnice (testing dengan hari Jumat dan Sabtu)
+1. curl dari client Burnice (testing hari Jumat dan Sabtu)
 ![image](https://github.com/user-attachments/assets/e70e35a3-55a9-4e19-87fc-636bef57a0de)
 
 2. Curl dari client selain Burnice, Caesar, Jane, dan Policeboo
@@ -431,3 +431,37 @@ iptables -A INPUT -j REJECT
 Soal:
 > Sembari menunggu, Fairy menyarankan Phaethon untuk berlatih di server HIA dan meminta bantuan dari faksi Victoria (Ellen & Lycaon) dan PubSec. Akses HIA hanya diperbolehkan untuk a. Ellen dan Lycaon pada jam 08.00-21.00. b. Jane dan Policeboo pada jam 03.00-23.00 (hak kepolisian). Gunakan Curl untuk memastikan akses ini.
 
+Script iptables di web server HIA:
+```
+iptables -A INPUT -s 10.71.0.0/24 -m time --timestart 03:00 --timestop 23:00 -j ACCEPT
+iptables -A INPUT -s 10.71.1.128/25 -m time --timestart 08:00 --timestop 21:00 -j ACCEPT
+iptables -A INPUT -j REJECT
+```
+
+### Testing
+1. curl dari Ellen ke HIA (jam akses)
+
+    ![image](https://github.com/user-attachments/assets/0a56ecc3-bc5a-4922-aaf2-e8027f0775be)
+
+2. curl dari Ellen ke HIA (bukan jam akses)
+![image](https://github.com/user-attachments/assets/989bf96b-7fa2-4e4f-933d-9ee17981469d)
+
+3. curl dari Jane ke HIA (jam akses)
+
+    ![image](https://github.com/user-attachments/assets/c3efd8ed-2583-4115-89e2-9af764e23b49)
+
+4. curl dari Jane ke HIA (bukan jam akses)
+![image](https://github.com/user-attachments/assets/3b12988f-6bf4-4a52-87b1-766dc2872d0d)
+
+5. curl dari client selain faksi Victoria (Ellen & Lycaon) & PubSec (Jane & Policeboo)
+![image](https://github.com/user-attachments/assets/c7338166-9d2b-4c8f-9d60-345cfdd8fe96)
+
+## No. 6
+Soal:
+> Sebagai bagian dari pelatihan, PubSec diminta memperketat keamanan jaringan di server HIA. Jane dan Policeboo melakukan simulasi port scan menggunakan nmap pada rentang port 1–100.
+> 
+> a. Web server harus memblokir aktivitas scan port yang melebihi 25 port secara otomatis dalam rentang waktu 10 detik.
+> 
+> b. Penyerang yang terblokir tidak dapat melakukan ping, nc, atau curl ke HIA.
+> 
+> c. Catat log dari iptables untuk keperluan analisis dan dokumentasikan dalam format PDF.
