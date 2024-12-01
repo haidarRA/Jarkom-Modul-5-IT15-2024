@@ -465,3 +465,68 @@ Soal:
 > b. Penyerang yang terblokir tidak dapat melakukan ping, nc, atau curl ke HIA.
 > 
 > c. Catat log dari iptables untuk keperluan analisis dan dokumentasikan dalam format PDF.
+
+Script untuk melakukan pemblokiran terhadap serangan nmap
+```
+iptables -N PORTSCAN
+
+# Mendeteksi aktivitas baru dan menandai IP
+iptables -A INPUT -p tcp -m state --state NEW -m recent --set --name portscan
+
+# Blokir IP yang melakukan lebih dari 25 koneksi dalam 10 detik
+iptables -A INPUT -p tcp -m state --state NEW -m recent --update --seconds 10 --hitcount 25 --name portscan -j DROP
+
+# untuk melakukan logging
+iptables -A INPUT -p tcp -m state --state NEW -m recent --update --seconds 10 --hitcount 25 --name portscan -j LOG --log-prefix "Port Scan Detected: " --log-level 7
+
+#  Blokir ICMP (ping)
+iptables -A INPUT -p icmp -m recent --name portscan --rcheck -j DROP
+
+# Blokir TCP dan UDP
+iptables -A INPUT -p tcp -m recent --name portscan --rcheck -j DROP
+iptables -A INPUT -p udp -m recent --name portscan --rcheck -j DROP
+
+#  Konfigurasi Forward Chain
+iptables -A FORWARD -m recent --name portscan --rcheck -j DROP
+```
+pengujian nmap
+![Screenshot 2024-12-01 050935](https://github.com/user-attachments/assets/8dd7ec6c-ae5d-4208-a016-e2143ab69b1c)
+
+## No. 7
+> Buatlah agar akses HollowZero hanya boleh berasal dari 2 koneksi aktif dari 2 ip yang berbeda dalam waktu yang bersamaan pengujian dilakukan di burnice, caeser, jane dan policeboo lakukan pengujian dengan curl
+
+script untuk membuat akses hanya boleh berasal dari 2 koneksi aktif dari 2 ip yang berbeda dalam waktu yang bersamaan di web server HollowZero
+```
+iptables -I INPUT -p tcp --dport 80 -m connlimit --connlimit-above 2 --connlimit-mask 0 -j DROP
+iptables -I INPUT -p tcp --dport 443 -m connlimit --connlimit-above 2 --connlimit-mask 0 -j DROP
+
+iptables -I INPUT -p tcp --dport 80 -m hashlimit --hashlimit-name ip_limit --hashlimit-above 2/sec --hashlimit-mode srcip --hashlimit-srcmask 32 -j DROP
+iptables -I INPUT -p tcp --dport 443 -m hashlimit --hashlimit-name ip_limit --hashlimit-above 2/sec --hashlimit-mode srcip --hashlimit-srcmask 32 -j DROP
+
+iptables -I INPUT -p tcp --dport 80 -m connlimit --connlimit-above 2 --connlimit-mask 32 -j DROP
+iptables -I INPUT -p tcp --dport 443 -m connlimit --connlimit-above 2 --connlimit-mask 32 -j DROP
+
+iptables -I INPUT -p icmp -m connlimit --connlimit-above 2 --connlimit-mask 0 -j DROP
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+```
+
+lakukan pengujian di 3 client yang berbeda dengan perintah berikut
+```
+for i in {1..100}; do curl 10.71.1.17 & done
+```
+![Screenshot 2024-12-01 090750](https://github.com/user-attachments/assets/c37d0cea-e4e3-488e-80dd-d93edd848609)
+
+## No. 8
+> selama ujicoba fairy memdeteksi aktivitas mencurigakan dari burnice, setiap kali fairy mengirimkan paket ke burnice paket tersebut akan di alihkan ke HollowZero. Gunakan nc untuk memastikan pengalihan tersebut
+
+jalankan perintah - perintah tersebut sesuai dengan gambar di fairy, burnice dan HollowZero
+![Screenshot 2024-12-01 093311](https://github.com/user-attachments/assets/585c3b92-94d5-411d-b7ac-cc12e120ef74)
+![Screenshot 2024-12-01 093324](https://github.com/user-attachments/assets/f660e9bf-36ad-4c8d-886d-1286b9988193)
+![Screenshot 2024-12-01 093336](https://github.com/user-attachments/assets/549f347a-a8ca-49f1-8e1b-d1ced390b4dc)
+
+dapat dilihat burnice tidak menerima paket apapun namun di HollowZero mendapatkan paket yang dirimkan dari fairy
+
+
+# Misi 3: Menangkap Burnice
+## No. 1
+> Mengetahui hal tersebut Wise dan Belle mengambil langkah drastis: memblokir semua lalu lintas masuk dan keluar dari Burnice, gunakan  nc dan ping. Burnice ya bukan Caesar.
