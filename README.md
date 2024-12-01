@@ -519,12 +519,16 @@ for i in {1..100}; do curl 10.71.1.17 & done
 ## No. 8
 > selama ujicoba fairy memdeteksi aktivitas mencurigakan dari burnice, setiap kali fairy mengirimkan paket ke burnice paket tersebut akan di alihkan ke HollowZero. Gunakan nc untuk memastikan pengalihan tersebut
 
-jalankan perintah - perintah tersebut sesuai dengan gambar di fairy, burnice dan HollowZero
-![Screenshot 2024-12-01 093311](https://github.com/user-attachments/assets/585c3b92-94d5-411d-b7ac-cc12e120ef74)
-![Screenshot 2024-12-01 093324](https://github.com/user-attachments/assets/f660e9bf-36ad-4c8d-886d-1286b9988193)
-![Screenshot 2024-12-01 093336](https://github.com/user-attachments/assets/549f347a-a8ca-49f1-8e1b-d1ced390b4dc)
+Jalankan script berikut di Burnice agar paket yang diterima ke burnice akan dialihkan ke HollowZero.
+```
+iptables -t nat -A PREROUTING -p tcp -j DNAT --to-destination 10.71.1.17
+iptables -A FORWARD -p tcp -d 10.71.1.17 -j ACCEPT
+```
 
-dapat dilihat burnice tidak menerima paket apapun namun di HollowZero mendapatkan paket yang dirimkan dari fairy
+jalankan perintah - perintah tersebut sesuai dengan gambar di fairy, burnice dan HollowZero
+![image](https://github.com/user-attachments/assets/77395c66-deef-453f-a514-65aec4de6b3a)
+
+dapat dilihat paket yang diterima oleh Burnice akan dialihkan ke HollowZero.
 
 
 # Misi 3: Menangkap Burnice
