@@ -534,3 +534,19 @@ dapat dilihat paket yang diterima oleh Burnice akan dialihkan ke HollowZero.
 # Misi 3: Menangkap Burnice
 ## No. 1
 > Mengetahui hal tersebut Wise dan Belle mengambil langkah drastis: memblokir semua lalu lintas masuk dan keluar dari Burnice, gunakan  nc dan ping. Burnice ya bukan Caesar.
+
+Script di client Burnice:
+```
+iptables --policy INPUT DROP
+iptables --policy OUTPUT DROP
+iptables --policy FORWARD DROP
+```
+
+### Testing
+1. Ping dari Burnice
+
+    ![image](https://github.com/user-attachments/assets/ed25bed6-6d7c-4f87-a482-811fc4641f75)
+
+3. Ping ke Burnice
+
+    ![image](https://github.com/user-attachments/assets/5abf6f28-a5e4-4607-8f73-8a8789095d39)
